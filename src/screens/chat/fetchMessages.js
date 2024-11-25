@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { fetchMessages } from "../../services/chat"; // API for fetching past messages
-import { sendmesages } from "../../services/chat"; // Ensure this is imported correctly
+import { fetchMessages } from "../../services/chat";
+import { sendmesages } from "../../services/chat";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 
 const FetchMessages = ({ userId, chatWith }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  // Fetch past messages when the chat partner changes
   useEffect(() => {
     const getMessages = async () => {
       try {
-        const data = await fetchMessages(userId, chatWith); // Fetch messages from the server
+        const data = await fetchMessages(userId, chatWith);
         setMessages(data);
       } catch (error) {
         console.error("Error fetching messages:", error.message);
@@ -31,58 +31,63 @@ const FetchMessages = ({ userId, chatWith }) => {
     };
 
     try {
-      // Send the message to the server to store it in the database
-      await sendmesages(messageData); // Pass messageData to sendmesages function
-      setMessages((prev) => [...prev, messageData]); // Update local state with the new message
-      setNewMessage(""); // Clear the input field
+      await sendmesages(messageData);
+      setMessages((prev) => [...prev, messageData]);
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error.message);
     }
   };
 
   return (
-    <div>
-      {/* Messages */}
-      <div
-        style={{ maxHeight: "70vh", overflowY: "auto", marginBottom: "10px" }}
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Paper
+        sx={{
+          maxHeight: "70vh",
+          overflowY: "auto",
+          p: 2,
+          backgroundColor: "#121212",
+          color: "#fff",
+        }}
       >
         {messages.map((msg, index) => (
-          <div
+          <Box
             key={index}
-            style={{
+            sx={{
               textAlign: msg.sender === userId ? "right" : "left",
-              margin: "10px 0",
+              my: 1,
             }}
           >
-            <p
-              style={{
+            <Typography
+              sx={{
                 display: "inline-block",
-                padding: "10px",
-                background: msg.sender === userId ? "#dcf8c6" : "#fff",
+                p: 2,
+                backgroundColor: msg.sender === userId ? "#1e88e5" : "#424242",
                 borderRadius: "10px",
                 maxWidth: "70%",
+                color: "#fff",
               }}
             >
               {msg.message}
-            </p>
-          </div>
+            </Typography>
+          </Box>
         ))}
-      </div>
+      </Paper>
 
-      {/* Input */}
-      <div>
-        <input
-          type="text"
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <TextField
+          variant="outlined"
           placeholder="Type a message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          style={{ width: "80%", padding: "10px", marginRight: "10px" }}
+          fullWidth
+          InputProps={{ sx: { backgroundColor: "#fff", borderRadius: "10px" } }}
         />
-        <button onClick={handleSendMessage} style={{ padding: "10px" }}>
+        <Button variant="contained" color="primary" onClick={handleSendMessage}>
           Send
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

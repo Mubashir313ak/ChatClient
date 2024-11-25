@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import FetchMessages from "./fetchMessages";
 import { GetAllUser } from "../../services/auth";
-import { Box } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const ChatPage = () => {
   const [selectedChatWith, setSelectedChatWith] = useState(null);
   const [users, setUsers] = useState([]);
-  // Assume the logged-in user's ID comes from Redux or Context
   const userId = useSelector((state) => state.auth.user._id);
   const navigate = useNavigate();
 
@@ -17,10 +16,10 @@ const ChatPage = () => {
     const fetchUsers = async () => {
       try {
         const data = await GetAllUser();
-        setUsers(data.users || []); // Ensure users is always an array
+        setUsers(data.users || []);
       } catch (err) {
         console.error("Error fetching users:", err.message);
-        setUsers([]); // Default to empty array on error
+        setUsers([]);
       }
     };
 
@@ -28,35 +27,68 @@ const ChatPage = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <h2>Contacts</h2>
-        {users.length > 0 ? (
-          users.map((user) => (
-            <button
-              key={user._id}
-              onClick={() => setSelectedChatWith(user._id)}
-            >
-              {user.username}
-            </button>
-          ))
-        ) : (
-          <p>Loading contacts...</p>
-        )}
-      </div>
+    <Box
+      sx={{ backgroundColor: "#000", color: "#fff", minHeight: "100vh", p: 3 }}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Typography variant="h4" gutterBottom>
+            Contacts
+          </Typography>
+          {users.length > 0 ? (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              {users.map((user) => (
+                <Button
+                  key={user._id}
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setSelectedChatWith(user._id)}
+                  fullWidth
+                >
+                  {user.username}
+                </Button>
+              ))}
+            </Box>
+          ) : (
+            <Typography variant="body1">Loading contacts...</Typography>
+          )}
+        </Grid>
 
-      <div>
-        {selectedChatWith ? (
-          <FetchMessages userId={userId} chatWith={selectedChatWith} />
-        ) : (
-          <p>Select a contact to start chatting</p>
-        )}
-      </div>
-      <Box sx={{ display: "flex", width: "100%", justifyContent: "flex-end" }}>
-        <button onClick={() => navigate("/chat")}>Inbox</button>
-        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+        <Grid item xs={12} md={8}>
+          {selectedChatWith ? (
+            <FetchMessages userId={userId} chatWith={selectedChatWith} />
+          ) : (
+            <Typography variant="h6" sx={{ mt: 4 }}>
+              Select a contact to start chatting
+            </Typography>
+          )}
+        </Grid>
+      </Grid>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 2,
+          mt: 4,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/chat")}
+        >
+          Inbox
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/dashboard")}
+        >
+          Dashboard
+        </Button>
       </Box>
-    </div>
+    </Box>
   );
 };
 

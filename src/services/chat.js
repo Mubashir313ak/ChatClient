@@ -15,14 +15,14 @@ export const fetchMessages = async (userId, chatWith) => {
 export const sendmesages = async (body) => {
   try {
     const data = await Interceptor({
-      endpoint: "/chat/send", // Remove the extra `/` in the endpoint
+      endpoint: "/chat/send",
       method: "POST",
-      body, // Ensure the body parameter is passed correctly
+      body,
     });
 
-    return data; // Optionally return data if you need it
+    return data;
   } catch (err) {
     alert(err.message);
-    throw err; // Rethrow the error for handling in the component
+    throw err;
   }
 };
